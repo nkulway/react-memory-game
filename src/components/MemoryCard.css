@@ -1,59 +1,80 @@
+/* Image Styling */
 img {
   width: 80px;
 }
 
+/* Memory Card Container */
 .MemoryCard {
   cursor: pointer;
   display: inline-block;
   height: 80px;
   margin: 5px;
-  perspective: 800px;
+  perspective: 800px; /* Enables 3D transform effect */
   position: relative;
   width: 150px;
 }
 
 .MemoryCard__back {
- background: repeating-radial-gradient(
-  circle,
-  #16A7A2,
-  #16A7A2 10px,
-  #13807C 10px, 
-  #13807C 20px
-);
-  /* border: 3px solid #193D49;
-  border-radius: 5px;
-  cursor: pointer;
-  display: inline-block;
-  height: 80px;
-  margin: 3px;
-  width: 150px; */
+  background: repeating-radial-gradient(
+    circle,
+    #16A7A2,
+    #16A7A2 10px,
+    #13807C 10px, 
+    #13807C 20px
+  );
 }
 
 .MemoryCard__front {
   font-size: 30px;
   padding-top: 20px;
-  transform: rotateY(180deg);
+  transform: rotateY(180deg); /* Flips the front face initially */
 }
 
 .MemoryCard__inner {
   border: 1px solid #193D49;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
   height: 100%;
   position: absolute;
-  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth 3D flip */
   transform-style: preserve-3d;
   width: 100%;
 }
 
+/* Front and Back Faces */
 .MemoryCard__front,
- .MemoryCard__back {
-  backface-visibility: hidden;
+.MemoryCard__back {
+  backface-visibility: hidden; /* Hides the back face when flipped */
   height: 100%;
   position: absolute;
   width: 100%;
 }
 
+/* Flipped State */
 .MemoryCard__inner.flipped {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg); /* Flips the card */
+}
+
+/* Focus State for Accessibility */
+.MemoryCard:focus {
+  outline: 2px solid #61dafb; /* Adds a visible focus outline for keyboard navigation */
+  outline-offset: 2px;
+}
+
+:root {
+  --card-width: 150px;
+  --card-height: 80px;
+  --card-margin: 5px;
+}
+
+.MemoryCard {
+  width: var(--card-width);
+  height: var(--card-height);
+  margin: var(--card-margin);
+}
+
+.MemoryCard__back,
+.MemoryCard__front {
+  width: 100%;
+  height: 100%;
 }
