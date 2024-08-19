@@ -14,7 +14,7 @@ function MemoryCard(props) {
       <div className="MemoryCard" onClick={props.clickHandler}>
         <div className={innerClass}>
           <div className="MemoryCard__back">
-            <img src="https://www.digitalcrafts.com/img/logo-wrench-white.png" alt="wrench" />
+            <img src="question-mark.svg" alt="wrench" />
           </div>
           <div className="MemoryCard__front">
             {props.symbol}
