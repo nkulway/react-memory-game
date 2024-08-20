@@ -58,7 +58,9 @@ button.play-again {
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 button.play-again:hover {

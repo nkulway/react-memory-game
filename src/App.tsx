@@ -1,8 +1,13 @@
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import MemoryCard from './components/MemoryCard'
 
-const generateDeck = () => {
+interface Card {
+  isFlipped: boolean
+  symbol: string
+}
+
+const generateDeck = (): Card[] => {
   const symbols = ['∆', 'ß', '£', '§', '•', '$', '+', 'ø']
   const newDeck = symbols.flatMap((symbol) => [
     { isFlipped: false, symbol },
@@ -11,14 +16,14 @@ const generateDeck = () => {
   return shuffle(newDeck)
 }
 
-const shuffle = (deck) => deck.sort(() => Math.random() - 0.5)
+const shuffle = (deck: Card[]): Card[] => deck.sort(() => Math.random() - 0.5)
 
 function App() {
-  const [pickedCards, setPickedCards] = useState([])
-  const [deck, setDeck] = useState(generateDeck())
-  const [gameOver, setGameOver] = useState(false)
+  const [pickedCards, setPickedCards] = useState<number[]>([])
+  const [deck, setDeck] = useState<Card[]>(generateDeck())
+  const [gameOver, setGameOver] = useState<boolean>(false)
 
-  const unflipCards = useCallback((firstIndex, secondIndex) => {
+  const unflipCards = useCallback((firstIndex: number, secondIndex: number) => {
     setDeck((prevDeck) =>
       prevDeck.map((card, index) =>
         index === firstIndex || index === secondIndex
@@ -28,14 +33,14 @@ function App() {
     )
   }, [])
 
-  const checkWin = useCallback((currentDeck) => {
+  const checkWin = useCallback((currentDeck: Card[]) => {
     if (currentDeck.every((card) => card.isFlipped)) {
       setGameOver(true)
     }
   }, [])
 
   const pickCard = useCallback(
-    (cardIndex) => {
+    (cardIndex: number) => {
       if (deck[cardIndex].isFlipped || pickedCards.length >= 2) return
 
       const newDeck = deck.map((card, index) =>
@@ -79,7 +84,11 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1 className="App-title">Memory Game</h1>
-        {gameOver && <button className="play-again" onClick={resetGame}>Play Again</button>}
+        {gameOver && (
+          <button className="play-again" onClick={resetGame}>
+            Play Again
+          </button>
+        )}
         <h2 className="App-subtitle">Match cards to win!</h2>
       </header>
       {Array.from({ length: 4 }).map((_, rowIndex) => (
