@@ -17,10 +17,10 @@ img {
 .MemoryCard__back {
   background: repeating-radial-gradient(
     circle,
-    #16A7A2,
-    #16A7A2 10px,
-    #13807C 10px, 
-    #13807C 20px
+    #16a7a2,
+    #16a7a2 10px,
+    #13807c 10px,
+    #13807c 20px
   );
 }
 
@@ -31,7 +31,7 @@ img {
 }
 
 .MemoryCard__inner {
-  border: 1px solid #193D49;
+  border: 1px solid #193d49;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
   height: 100%;
