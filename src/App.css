@@ -31,6 +31,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -38,4 +39,37 @@
 
 h2 {
   color: #767676;
+}
+
+.button-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Play Again Button */
+button.play-again {
+  background-color: #61dafb;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button.play-again:hover {
+  background-color: #4fa3b0;
+}
+
+button.play-again:focus {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+button.play-again:active {
+  transform: scale(0.98);
 }

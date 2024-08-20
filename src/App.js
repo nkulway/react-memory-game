@@ -79,7 +79,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1 className="App-title">Memory Game</h1>
-        {gameOver && <button onClick={resetGame}>Play Again</button>}
+        {gameOver && <button className="play-again" onClick={resetGame}>Play Again</button>}
         <h2 className="App-subtitle">Match cards to win!</h2>
       </header>
       {Array.from({ length: 4 }).map((_, rowIndex) => (
