@@ -1,86 +1,79 @@
-import { useState } from "react";
-import "./App.css";
-import MemoryCard from "./components/MemoryCard";
+import { useState, useEffect, useCallback } from 'react'
+import './App.css'
+import MemoryCard from './components/MemoryCard'
 
-function generateDeck() {
-  const newDeck = [];
-  const symbols = ["∆", "ß", "£", "§", "•", "$", "+", "ø"];
-  for (let i = 0; i < symbols.length * 2; i++) {
-    newDeck.push({
-      isFlipped: false,
-      symbol: symbols[i % symbols.length],
-    });
-  }
-  return shuffle(newDeck);
+const generateDeck = () => {
+  const symbols = ['∆', 'ß', '£', '§', '•', '$', '+', 'ø']
+  const newDeck = symbols.flatMap((symbol) => [
+    { isFlipped: false, symbol },
+    { isFlipped: false, symbol },
+  ])
+  return shuffle(newDeck)
 }
 
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+const shuffle = (deck) => deck.sort(() => Math.random() - 0.5)
 
 function App() {
-  const [pickedCards, setPickedCards] = useState([]);
-  const [deck, setDeck] = useState(generateDeck());
-  const [gameOver, setGameOver] = useState(false);
+  const [pickedCards, setPickedCards] = useState([])
+  const [deck, setDeck] = useState(generateDeck())
+  const [gameOver, setGameOver] = useState(false)
 
-  const pickCard = (cardIndex) => {
-    let newDeck = [...deck];
-    let card = newDeck[cardIndex];
-    if (card.isFlipped) {
-      return;
+  const unflipCards = useCallback((firstIndex, secondIndex) => {
+    setDeck((prevDeck) =>
+      prevDeck.map((card, index) =>
+        index === firstIndex || index === secondIndex
+          ? { ...card, isFlipped: false }
+          : card
+      )
+    )
+  }, [])
+
+  const checkWin = useCallback((currentDeck) => {
+    if (currentDeck.every((card) => card.isFlipped)) {
+      setGameOver(true)
     }
-    card.isFlipped = true;
-    let newPickedCards = [...pickedCards, cardIndex];
-    if (newPickedCards.length >= 2) {
-      const card1Index = newPickedCards[0];
-      const card2Index = newPickedCards[1];
-      const firstCard = newDeck[card1Index];
-      const secondCard = newDeck[card2Index];
-      newPickedCards = [];
-      if (firstCard.symbol !== secondCard.symbol) {
-        unflipCards(card1Index, card2Index);
+  }, [])
+
+  const pickCard = useCallback(
+    (cardIndex) => {
+      if (deck[cardIndex].isFlipped || pickedCards.length >= 2) return
+
+      const newDeck = deck.map((card, index) =>
+        index === cardIndex ? { ...card, isFlipped: true } : card
+      )
+
+      const newPickedCards = [...pickedCards, cardIndex]
+
+      if (newPickedCards.length === 2) {
+        const [firstIndex, secondIndex] = newPickedCards
+        const isMatch =
+          newDeck[firstIndex].symbol === newDeck[secondIndex].symbol
+
+        if (!isMatch) {
+          setTimeout(() => unflipCards(firstIndex, secondIndex), 1000)
+        }
+        setPickedCards([])
+      } else {
+        setPickedCards(newPickedCards)
       }
-    }
-    setPickedCards(newPickedCards);
-    setDeck(newDeck);
-    checkWin();
-  };
 
-  let unflipCards = (card1Index, card2Index) => {
-    setTimeout(() => {
-      let newDeck = [...deck];
-      newDeck[card1Index].isFlipped = false;
-      newDeck[card2Index].isFlipped = false;
-      setDeck(newDeck);
-    }, 1000);
-  };
+      setDeck(newDeck)
+      checkWin(newDeck)
+    },
+    [deck, pickedCards, unflipCards, checkWin]
+  )
 
-  const checkWin = () => {
-    const allFlipped = deck.every((card) => card.isFlipped);
-    if (allFlipped) {
-      setGameOver(true);
-    }
-  };
-
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     setDeck(generateDeck())
-    setGameOver (false)
-  }
+    setGameOver(false)
+    setPickedCards([])
+  }, [])
 
-  const cardsJSX = deck.map((card, index) => {
-    return (
-      <MemoryCard
-        clickHandler={() => pickCard(index)}
-        key={index}
-        symbol={card.symbol}
-        isFlipped={card.isFlipped}
-      />
-    );
-  });
+  useEffect(() => {
+    if (gameOver) {
+      console.log('You won!')
+    }
+  }, [gameOver])
 
   return (
     <div className="App">
@@ -89,12 +82,20 @@ function App() {
         {gameOver && <button onClick={resetGame}>Play Again</button>}
         <h2 className="App-subtitle">Match cards to win!</h2>
       </header>
-      <div className="row">{cardsJSX.slice(0, 4)}</div>
-      <div className="row">{cardsJSX.slice(4, 8)}</div>
-      <div className="row">{cardsJSX.slice(8, 12)}</div>
-      <div className="row">{cardsJSX.slice(12, 16)}</div>
+      {Array.from({ length: 4 }).map((_, rowIndex) => (
+        <div className="row" key={rowIndex}>
+          {deck.slice(rowIndex * 4, rowIndex * 4 + 4).map((card, index) => (
+            <MemoryCard
+              clickHandler={() => pickCard(rowIndex * 4 + index)}
+              key={rowIndex * 4 + index}
+              symbol={card.symbol}
+              isFlipped={card.isFlipped}
+            />
+          ))}
+        </div>
+      ))}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
