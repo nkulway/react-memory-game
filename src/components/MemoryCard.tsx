@@ -1,7 +1,17 @@
-import React from 'react'
+import React, { FC } from 'react'
 import './MemoryCard.css'
 
-function MemoryCard({ clickHandler, isFlipped, symbol }) {
+interface MemoryCardProps {
+  clickHandler: () => void
+  isFlipped: boolean
+  symbol: string
+}
+
+const MemoryCard: FC<MemoryCardProps> = ({
+  clickHandler,
+  isFlipped,
+  symbol,
+}) => {
   const innerClass = isFlipped
     ? 'MemoryCard__inner flipped'
     : 'MemoryCard__inner'
