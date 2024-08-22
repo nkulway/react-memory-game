@@ -2,12 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import MemoryCard from './components/MemoryCard'
 
-interface Card {
-  isFlipped: boolean
-  symbol: string
-}
-
-const generateDeck = (): Card[] => {
+const generateDeck = () => {
   const symbols = ['∆', 'ß', '£', '§', '•', '$', '+', 'ø']
   const newDeck = symbols.flatMap((symbol) => [
     { isFlipped: false, symbol },
@@ -16,12 +11,14 @@ const generateDeck = (): Card[] => {
   return shuffle(newDeck)
 }
 
-const shuffle = (deck: Card[]): Card[] => deck.sort(() => Math.random() - 0.5)
+const shuffle = (deck: { isFlipped: boolean; symbol: string }[]) =>
+  deck.sort(() => Math.random() - 0.5)
 
 function App() {
   const [pickedCards, setPickedCards] = useState<number[]>([])
-  const [deck, setDeck] = useState<Card[]>(generateDeck())
-  const [gameOver, setGameOver] = useState<boolean>(false)
+  const [deck, setDeck] = useState(generateDeck())
+  const [gameOver, setGameOver] = useState(false)
+  const [winMessage, setWinMessage] = useState<string | null>(null)
 
   const unflipCards = useCallback((firstIndex: number, secondIndex: number) => {
     setDeck((prevDeck) =>
@@ -33,11 +30,15 @@ function App() {
     )
   }, [])
 
-  const checkWin = useCallback((currentDeck: Card[]) => {
-    if (currentDeck.every((card) => card.isFlipped)) {
-      setGameOver(true)
-    }
-  }, [])
+  const checkWin = useCallback(
+    (currentDeck: { isFlipped: boolean; symbol: string }[]) => {
+      if (currentDeck.every((card) => card.isFlipped)) {
+        setGameOver(true)
+        setWinMessage('Congratulations! You won!')
+      }
+    },
+    []
+  )
 
   const pickCard = useCallback(
     (cardIndex: number) => {
@@ -72,6 +73,7 @@ function App() {
     setDeck(generateDeck())
     setGameOver(false)
     setPickedCards([])
+    setWinMessage(null)
   }, [])
 
   useEffect(() => {
@@ -84,25 +86,31 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1 className="App-title">Memory Game</h1>
-        {gameOver && (
-          <button className="play-again" onClick={resetGame}>
-            Play Again
-          </button>
-        )}
+        <button
+          className={`play-again ${gameOver ? 'visible' : 'invisible'}`}
+          onClick={resetGame}
+        >
+          Play Again
+        </button>
+        <div className={`win-message ${winMessage ? 'visible' : 'invisible'}`}>
+          {winMessage}
+        </div>
         <h2 className="App-subtitle">Match cards to win!</h2>
       </header>
-      {Array.from({ length: 4 }).map((_, rowIndex) => (
-        <div className="row" key={rowIndex}>
-          {deck.slice(rowIndex * 4, rowIndex * 4 + 4).map((card, index) => (
-            <MemoryCard
-              clickHandler={() => pickCard(rowIndex * 4 + index)}
-              key={rowIndex * 4 + index}
-              symbol={card.symbol}
-              isFlipped={card.isFlipped}
-            />
-          ))}
-        </div>
-      ))}
+      <div className="game-board">
+        {Array.from({ length: 4 }).map((_, rowIndex) => (
+          <div className="row" key={rowIndex}>
+            {deck.slice(rowIndex * 4, rowIndex * 4 + 4).map((card, index) => (
+              <MemoryCard
+                clickHandler={() => pickCard(rowIndex * 4 + index)}
+                key={rowIndex * 4 + index}
+                symbol={card.symbol}
+                isFlipped={card.isFlipped}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
